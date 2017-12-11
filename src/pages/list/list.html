@@ -21,7 +21,10 @@
     <p> {{friend.phone_number}}</p>
     <p> {{friend.address}}</p>
     </ion-card-content>
-    </ion-card>    
+    </ion-card>
+    <button ion-button icon-left (click) = "removeFriend(friend)">
+      Delete
+    </button>    
     </ion-slide>
 
   </ion-slides>
