@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, ItemSliding, NavParams, AlertController, Events } from 'ionic-angular';
-
+import { MemberListProvider } from '../../providers/member-list/member-list';
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -9,13 +9,11 @@ export class HomePage {
   members: Array<any> = [];
   originMembers: Array<any> = [];
   constructor(public navCtrl: NavController, public alertCtrl: AlertController,
-    public events: Events) {
-    this.originMembers = [
-      {name:'Father', phone_number: '010-1234-0000', address: '경북 포항시 북구 흥해읍 한동로 558 한동대학교 벧엘관'},
-      {name:'Mother', phone_number: '010-1234-0001', address: '경북 포항시 북구 흥해읍 한동로 558 한동대학교 은혜관'},
-      {name:'Sister', phone_number: '010-1234-0002', address: '경북 포항시 북구 흥해읍 한동로 558 한동대학교 창조관'},
-      {name:'Brother', phone_number: '010-1234-0003', address: '경북 포항시 북구 흥해읍 한동로 558 한동대학교 비전관'}
-      ];
+    public events: Events, public memberList: MemberListProvider) {
+    memberList.membersList$ 
+    .subscribe( ( membersList: Array<any> ) => 
+    { this.originMembers = membersList; 
+    }); 
     this.members = this.originMembers;
   }
   addMember() { 
@@ -46,19 +44,19 @@ export class HomePage {
         { 
           text: 'Add', 
           handler: data => {
-            this.members.push({name: data.name, phone_number: data.phone_number, address: data.address}); 
-          } 
+            if(data.name != ''){  
+            this.memberList.addMember({title: data.name, component: HomePage, icon: 'person', name: data.name, phone_number: data.phone_number, address: data.address});
+            this.events.publish('members:updated', {});
+            } 
+          }
         } 
       ]
     });
     prompt.present();
   }
   deleteMember(member: any){
-    let index = this.members.indexOf(member);
-    if(index > -1){
-      this.members.splice(index, 1);
-    }
-
+    this.memberList.removeMember(member);
+    this.events.publish('members:updated', {});
   }
   getMember(ev) {
     // set val to the value of the ev target

@@ -11,6 +11,8 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { FriendListProvider } from '../providers/friend-list/friend-list';
+import { MemberListProvider } from '../providers/member-list/member-list';
 export const firebaseConfig = { 
   apiKey: "AIzaSyDEE6ITus9CP-ysVOli6ZEVdToJzrFlaBI",
   authDomain: "finalexam-2b76c.firebaseapp.com",
@@ -42,7 +44,9 @@ export const firebaseConfig = {
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    FriendListProvider,
+    MemberListProvider
   ]
 })
 export class AppModule {}
