@@ -1,37 +1,51 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-
+import { NavController, NavParams, ItemSliding, AlertController, Events  } from 'ionic-angular';
+import { AngularFireDatabase, FirebaseListObservable} from 'angularfire2/database';
 @Component({
   selector: 'page-list',
   templateUrl: 'list.html'
 })
 export class ListPage {
-  selectedItem: any;
-  icons: string[];
-  items: Array<{title: string, note: string, icon: string}>;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
-
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+  friends: FirebaseListObservable<any[]>;
+  constructor(public navCtrl: NavController, public af: AngularFireDatabase, public alertCtrl: AlertController) {
+      this.friends = af.list('/friends');
   }
-
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(ListPage, {
-      item: item
+  addFriend() {//message box for geting the user updating input 
+    let prompt = this.alertCtrl.create({ 
+      title: 'Add a Member', 
+      message: "Enter the member's information", 
+      inputs: [ 
+        { 
+          name: 'name', 
+          placeholder: 'name' 
+        },
+        { 
+          name: 'phone_number', 
+          placeholder: 'phone number' 
+        },
+        { 
+          name: 'address', 
+          placeholder: 'address' 
+        },
+      ],
+      buttons: [ 
+        { 
+          text: 'Cancel', 
+          handler: data => { 
+            console.log('Cancel clicked'); 
+          } 
+        }, 
+        { 
+          text: 'Add', 
+          handler: data => {
+            this.friends.push({name: data.name, phone_number: data.phone_number, address: data.address}); 
+          } 
+        } 
+      ]
     });
+    prompt.present(); 
+  }
+  removeFriend(friend: any) { 
+    this.friends.remove(friend.$key);
   }
 }
